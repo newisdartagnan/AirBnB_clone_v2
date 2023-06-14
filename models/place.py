@@ -4,9 +4,6 @@ from models.base_model import BaseModel, Base
 from sqlalchemy import Column, Integer, String, ForeignKey, Float, Table
 from sqlalchemy.orm import relationship
 from os import getenv
-from sqlalchemy.ext.declarative import declarative_base
-
-Base = declarative_base()
 
 
 class Place(BaseModel, Base):
@@ -44,9 +41,9 @@ class Place(BaseModel, Base):
                                  ForeignKey('amenities.id'),
                                  primary_key=True, nullable=False))
     if getenv('HBNB_TYPE_STORAGE') == 'db':
-    reviews = relationship("Review", cascade='all, delete',
+        reviews = relationship("Review", cascade='all, delete',
                            backref="place")
-    amenities = relationship("Amenity", secondary='place_amenity',
+        amenities = relationship("Amenity", secondary='place_amenity',
                              viewonly=False)
     else:
         @property

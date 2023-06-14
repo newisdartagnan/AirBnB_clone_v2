@@ -198,7 +198,7 @@ class HBNBCommand(cmd.Cmd):
         """
         counter = 0
         try:
-            my_list = split(line, " ")
+            my_list = line.split(" ")
             if my_list[0] not in self.all_classes:
                 raise NameError()
             objects = storage.all()
