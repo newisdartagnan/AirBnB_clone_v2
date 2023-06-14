@@ -4,6 +4,9 @@ from models.base_model import BaseModel, Base
 from sqlalchemy.orm import relationship
 from sqlalchemy import Column,  String, ForeignKey
 from os import getenv
+from sqlalchemy.ext.declarative import declarative_base
+
+Base = declarative_base()
 
 
 class Amenity(BaseModel, Base):
@@ -16,3 +19,10 @@ class Amenity(BaseModel, Base):
     if getenv("HBNB_TYPE_STORAGE") == "db":
         place_amenities = relationship("Place", secondary='place_amenity',
                                        back_populates="amenities")
+if __name__ == "__main__":
+    # ...
+    # Définition des classes
+
+    # Création des tables dans la base de données
+    Base.metadata.create_all(engine)
+

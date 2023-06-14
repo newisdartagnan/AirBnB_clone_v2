@@ -4,6 +4,9 @@ from models.base_model import BaseModel, Base
 from sqlalchemy import Column, Integer, String, ForeignKey, Float, Table
 from sqlalchemy.orm import relationship
 from os import getenv
+from sqlalchemy.ext.declarative import declarative_base
+
+Base = declarative_base()
 
 
 class Place(BaseModel, Base):
@@ -41,28 +44,36 @@ class Place(BaseModel, Base):
                                  ForeignKey('amenities.id'),
                                  primary_key=True, nullable=False))
     if getenv('HBNB_TYPE_STORAGE') == 'db':
-        reviews = relationship("Review", cascade='all, delete',
-                               backref="place")
-        amenities = relationship("Amenity", secondary='place_amenity',
-                                 viewonly=False)
+    reviews = relationship("Review", cascade='all, delete',
+                           backref="place")
+    amenities = relationship("Amenity", secondary='place_amenity',
+                             viewonly=False)
     else:
         @property
         def reviews(self):
             my_list = []
-            for data in self.reviews:
-                if data.place_id == self.id:
-                    my_list.append(data)
-            return(my_list)
+            for review in models.storage.all(Review).values():
+                if review.place_id == self.id:
+                    my_list.append(review)
+            return my_list
 
         @property
         def amenities(self):
             my_list = []
-            for data in models.storage.all(Amenity):
-                if data.amenity_ids == self.id:
-                    my_list.append(data)
-            return(my_list)
+            for amenity in models.storage.all(Amenity).values():
+                if amenity.id in self.amenity_ids:
+                    my_list.append(amenity)
+            return my_list
 
         @amenities.setter
         def amenities(self, obj):
-            if type(obj) == Amenity:
+            if isinstance(obj, Amenity):
                 self.amenity_ids.append(obj.id)
+
+if __name__ == "__main__":
+    # ...
+    # Définition des classes
+
+    # Création des tables dans la base de données
+    Base.metadata.create_all(engine)
+
