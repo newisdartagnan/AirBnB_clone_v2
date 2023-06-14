@@ -30,6 +30,12 @@ class DBStorage():
                                              pool_pre_ping=True))
         if getenv('HBNB_ENV') == 'test':
             Base.metadata.drop_all(self.__engine)
+        # Crée les tables dans la base de données
+        Base.metadata.create_all(self.__engine)
+        # Configure la session
+        Session = scoped_session(sessionmaker(bind=self.__engine,
+                                 expire_on_commit=False))
+        self.__session = Session()
 
     def all(self, cls=None):
         """Returns a dictionary"""
